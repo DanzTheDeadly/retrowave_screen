@@ -1,35 +1,55 @@
-#!/usr/bin/env python3
-import time
+from test.dummy_matrix import RGBMatrix, RGBMatrixOptions
+import PIL
 import sys
-sys.path.append('./lib/rpi-rgb-led-matrix/bindings/python')
-sys.path.append('./images')
-from rgbmatrix import RGBMatrix, RGBMatrixOptions
-from PIL import Image
-import cnf
+from time import sleep
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from yaml import safe_load
+import socketserver
 
-if len(sys.argv) < 2:
-    sys.exit("Require an image argument")
-else:
-    image_file = sys.argv[1]
 
-image = Image.open(image_file)
+class MatrixRequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(self.server.matrix.get_image())
 
-# Configuration for the matrix
-options = RGBMatrixOptions()
-options.cols = cnf.LED_COLS
-options.rows = cnf.LED_ROWS
-options.chain_length = cnf.CHAIN_LENGTH
-options.parallel = cnf.PARALLEL
-options.gpio_slowdown = cnf.GPIO_SLOWDOWN
-options.hardware_mapping = cnf.GPIO_MAPPING
+    def do_POST(self):
+        data = self.rfile.read(1024)
+        print(data)
+        self.server.matrix.SetImage(data)
+        self.send_response(200)
+        self.end_headers()
 
-matrix = RGBMatrix(options=options)
-matrix.SetImage(image.convert('RGB'))
 
-try:
-    print("Press CTRL-C to stop.")
-    print(sys.version)
-    while True:
-        time.sleep(10)
-except KeyboardInterrupt:
-    sys.exit(0)
+class MatrixController(HTTPServer):
+    def __init__(self, *args, config=None, **kwargs):
+        self.matrix_config = config['MATRIX']
+        self.server_config = config['SERVER']
+        #
+        self.matrix_opts = RGBMatrixOptions()
+        self.matrix_opts.cols = self.matrix_config['LED_COLS']
+        self.matrix_opts.rows = self.matrix_config['LED_ROWS']
+        self.matrix_opts.chain_length = self.matrix_config['CHAIN_LENGTH']
+        self.matrix_opts.parallel = self.matrix_config['PARALLEL']
+        self.matrix_opts.gpio_slowdown = self.matrix_config['GPIO_SLOWDOWN']
+        self.matrix_opts.hardware_mapping = self.matrix_config['GPIO_MAPPING']
+        self.matrix = RGBMatrix(options=self.matrix_opts)
+        #
+        super().__init__((self.server_config['HOST'], self.server_config['PORT']), MatrixRequestHandler)
+
+    def run(self):
+        self.serve_forever()
+
+
+if __name__ == '__main__':
+    print('Run test mode')
+    with open('conf.yaml') as conf_file:
+        config = safe_load(conf_file)
+    matrixController = MatrixController(config=config)
+    try:
+        print('Press CTRL-C to stop.')
+        print(sys.version)
+        matrixController.run()
+
+    except KeyboardInterrupt:
+        sys.exit(0)
