@@ -14,7 +14,7 @@ class MatrixRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(self.server.matrix.get_image())
 
     def do_POST(self):
-        data = self.rfile.read(1024)
+        data = self.rfile.read(int(self.headers['Content-Length']))
         print(data)
         self.server.matrix.SetImage(data)
         self.send_response(200)
