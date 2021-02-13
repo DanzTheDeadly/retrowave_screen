@@ -25,11 +25,4 @@ class RGBMatrix:
         print('Set pixel at x={x} y={y} to {R}-{G}-{B}'.format(x=x, y=y, R=R, G=G, B=B))
 
     def get_image(self):
-        img = ''
-        start = 0
-        for counter in range(self.options.cols * self.options.chain_length,
-                             len(self.image),
-                             self.options.cols * self.options.chain_length):
-            img += self.image[start:counter].decode() + '\n'
-            start = counter
-        return img.encode()
+        return bytes(self.image)
