@@ -1,11 +1,9 @@
 from test.dummy_matrix import RGBMatrix, RGBMatrixOptions
-import PIL
 import sys
-from time import sleep
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from yaml import safe_load
-import socketserver
-
+from PIL import Image
+import io
 
 class MatrixRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -15,8 +13,12 @@ class MatrixRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         data = self.rfile.read(int(self.headers['Content-Length']))
-        print(data)
-        self.server.matrix.SetImage(data)
+        img_buffer = io.BytesIO()
+        img_buffer.write(data)
+        img = Image.open(img_buffer).convert('RGB')
+        print(img)
+
+        self.server.matrix.SetImage(img)
         self.send_response(200)
         self.end_headers()
 
