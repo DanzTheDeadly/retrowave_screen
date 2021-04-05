@@ -14,7 +14,7 @@ class RGBMatrixOptions:
 class RGBMatrix:
     def __init__(self, options: RGBMatrixOptions):
         self.options = options
-        self.image = bytearray(b'0' * self.options.cols * self.options.chain_length * self.options.rows * self.options.parallel)
+        self.image = None
         print('Matrix created')
 
     def SetImage(self, img):
