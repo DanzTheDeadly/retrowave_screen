@@ -6,7 +6,7 @@ from yaml import safe_load
 
 if __name__ == '__main__':
     print('Run main mode')
-    with open('conf.yaml') as conf_file:
+    with open('config/conf.yaml') as conf_file:
         config = safe_load(conf_file)
     matrixController = MatrixController(config=config)
     try:
