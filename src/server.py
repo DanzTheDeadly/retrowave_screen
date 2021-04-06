@@ -2,13 +2,19 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from PIL import Image
 import io
+import base64
 
 
 class MatrixRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
-        self.server.image.save(self.wfile, format='png')
+        img_buffer = io.BytesIO()
+        self.server.image.save(img_buffer, format='png')
+        img_data = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+        with open('src/index.html') as page:
+            page_final = page.read().format(img_data).encode('utf-8')
+            self.wfile.write(page_final)
 
     def do_POST(self):
         request_content = self.rfile.read(int(self.headers['Content-Length']))

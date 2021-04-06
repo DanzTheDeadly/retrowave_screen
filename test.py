@@ -10,6 +10,8 @@ if __name__ == '__main__':
         config = safe_load(conf_file)
     matrixController = MatrixController(config=config, test_mode=True)
     try:
+        import os
+        print(os.getcwd())
         print('Press CTRL-C to stop.')
         print(sys.version)
         matrixController.run()
