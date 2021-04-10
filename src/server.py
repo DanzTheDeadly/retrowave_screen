@@ -3,6 +3,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from PIL import Image
 import io
 import base64
+import cgi
 
 
 class MatrixRequestHandler(BaseHTTPRequestHandler):
@@ -17,12 +18,20 @@ class MatrixRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(page_final)
 
     def do_POST(self):
-        request_content = self.rfile.read(int(self.headers['Content-Length']))
+        content_type, pdict = cgi.parse_header(self.headers['content-type'])
+        pdict['boundary'] = pdict['boundary'].encode('ascii')
+        result = cgi.parse_multipart(self.rfile, pdict)
+        image_extracted = b''.join(result['image'])
         img_buffer = io.BytesIO()
-        img_buffer.write(request_content)
-        self.server.image = Image.open(img_buffer).convert('RGB')
-        self.server.matrix.SetImage(self.server.image)
-        self.send_response(200)
+        img_buffer.write(image_extracted)
+        try:
+            self.server.image = Image.open(img_buffer).convert('RGB').resize((192, 96))
+            self.server.matrix.SetImage(self.server.image)
+        except Image.UnidentifiedImageError:
+            self.send_response(400, message='Unknown format')
+        else:
+            self.do_GET()
+            self.send_response(200)
         self.end_headers()
 
 
