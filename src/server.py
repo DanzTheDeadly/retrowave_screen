@@ -18,7 +18,8 @@ class MatrixRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(page_final)
 
     def do_POST(self):
-        content_type, pdict = cgi.parse_header(self.headers['content-type'])
+        content_type, pdict = cgi.parse_header(self.headers['Content-type'])
+        pdict['CONTENT-LENGTH'] = self.headers['Content-length']
         pdict['boundary'] = pdict['boundary'].encode('ascii')
         result = cgi.parse_multipart(self.rfile, pdict)
         image_extracted = b''.join(result['image'])
