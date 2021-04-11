@@ -14,7 +14,7 @@ class MatrixRequestHandler(BaseHTTPRequestHandler):
         self.server.image.save(img_buffer, format='png')
         img_data = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
         with open('src/index.html') as page:
-            page_final = page.read().format(img_data).encode('utf-8')
+            page_final = page.read().replace('$IMAGE', img_data).encode('utf-8')
             self.wfile.write(page_final)
 
     def do_POST(self):
