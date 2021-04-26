@@ -29,10 +29,8 @@ class MatrixRequestHandler(BaseHTTPRequestHandler):
             self.server.image = Image.open(img_buffer).convert('RGB').resize((192, 96))
             self.server.matrix.SetImage(self.server.image)
         except Image.UnidentifiedImageError:
-            self.send_response(400, message='Unknown format')
-        else:
-            self.do_GET()
-            self.send_response(200)
+            print('Image can\'t be identified')
+        self.do_GET()
         self.end_headers()
 
 
