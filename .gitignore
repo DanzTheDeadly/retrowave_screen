@@ -134,4 +134,4 @@ dmypy.json
 images/
 
 # Matrix lib
-lib/rpi-rgb-matrix/
+lib/rpi-rgb-led-matrix
