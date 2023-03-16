@@ -131,4 +131,7 @@ dmypy.json
 .idea/
 
 # Images
-.images/
+images/
+
+# Matrix lib
+rpi-rgb-matrix/
