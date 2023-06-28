@@ -8,6 +8,6 @@ MATRIX:
   CHAIN_LENGTH: 3
   PARALLEL: 3
 SERVER:
-  HOST: '192.168.1.69'
+  HOST: '192.168.1.65'
   PORT: 8080
 DEFAULT_IMG: 'images/error.ppm'
