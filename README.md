@@ -21,6 +21,17 @@ sudo make install-python PYTHON=python3
 ### Install requirements.txt
 cd ../../ && sudo pip install -r requirements.txt
 
+### Installation
+1. Качаем образ
+2. Ставим образ на флешку
+3. В файле dietpi.txt добавляем флаг для обнаружения wi-fi
+4. В файле dietpi-wifi.txt вводим логин и пароль от вайфая
+5. Ставим флешку, включаем
+6. Находим диетпи в сети: nmap 192.168.1.*
+7. ssh root@192.168.1.* - вводим наш IP
+8. Проводим первоначальную настройку
+9. Готово
+
 ### Run main.py
 sudo python3 main.py
 

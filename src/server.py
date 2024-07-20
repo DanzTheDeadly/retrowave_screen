@@ -4,6 +4,11 @@ from PIL import Image
 import io
 import base64
 import cgi
+import test.dummy_matrix
+import sys
+sys.path.append('../lib/rpi-rgb-led-matrix/bindings/python')
+sys.path.append('../images')
+import rgbmatrix
 
 
 class MatrixRequestHandler(BaseHTTPRequestHandler):
@@ -39,21 +44,14 @@ class MatrixController(HTTPServer):
         self.matrix_config = config['MATRIX']
         self.server_config = config['SERVER']
         #
-        if test_mode:
-            from test.dummy_matrix import RGBMatrix, RGBMatrixOptions
-        else:
-            import sys
-            sys.path.append('../lib/rpi-rgb-led-matrix/bindings/python')
-            sys.path.append('../images')
-            from rgbmatrix import RGBMatrix, RGBMatrixOptions
-        self.matrix_opts = RGBMatrixOptions()
+        self.matrix_opts = rgbmatrix.RGBMatrixOptions()
         self.matrix_opts.cols = self.matrix_config['LED_COLS']
         self.matrix_opts.rows = self.matrix_config['LED_ROWS']
         self.matrix_opts.chain_length = self.matrix_config['CHAIN_LENGTH']
         self.matrix_opts.parallel = self.matrix_config['PARALLEL']
         self.matrix_opts.gpio_slowdown = self.matrix_config['GPIO_SLOWDOWN']
         self.matrix_opts.hardware_mapping = self.matrix_config['GPIO_MAPPING']
-        self.matrix = RGBMatrix(options=self.matrix_opts)
+        self.matrix = rgbmatrix.RGBMatrix(options=self.matrix_opts)
         # set default image when starting
         self.image = Image.open(config['DEFAULT_IMG'])
         self.matrix.SetImage(self.image)
