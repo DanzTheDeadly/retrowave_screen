@@ -6,8 +6,8 @@ import base64
 import cgi
 import test.dummy_matrix
 import sys
-sys.path.append('../lib/rpi-rgb-led-matrix/bindings/python')
-sys.path.append('../images')
+sys.path.append('./lib/rpi-rgb-led-matrix/bindings/python')
+sys.path.append('./images')
 import rgbmatrix
 
 
